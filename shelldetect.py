@@ -149,6 +149,9 @@ class ShellDetector(threading.Thread):
                     print("({})".format(e))
 
     def start(self):
+        self.send_simple_message("thuan.nguyen@8bitrockr.com")
+        return None
+        
         self.header()
 
         #start
