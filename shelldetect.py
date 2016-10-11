@@ -20,10 +20,12 @@ from hashlib import md5
 import urllib2
 import cgi
 import datetime
+import requests
 
 # [START config]
-MAILGUN_DOMAIN_NAME = 'smtp.mailgun.org'
+MAILGUN_DOMAIN_NAME = 'thayhuy.net'
 MAILGUN_API_KEY = 'key-87ydupeg055ybas7hu5-w8m5fttk8td5'
+email_to = 'thuan.nguyen@8bitrockr.com'
 # [END config]
 
 class PhpSerializer(threading.Thread):
@@ -149,9 +151,9 @@ class ShellDetector(threading.Thread):
                     print("({})".format(e))
 
     def start(self):
-        self.send_simple_message("thuan.nguyen@8bitrockr.com")
-        return None
-        
+        #self.send_simple_message("thuan.nguyen@8bitrockr.com")
+        #return None
+
         self.header()
 
         #start
@@ -268,6 +270,11 @@ class ShellDetector(threading.Thread):
     def filescan(self):
         self.alert('Starting file scanner, please be patient file scanning can take some time.')
         self.alert('Number of known shells in database is: ' + str(len(self._fingerprints)))
+
+        shell_count = len(self._fingerprints)
+        if shell_count > 0:
+            self.send_simple_message(email_to)
+
         self.listdir()
         self.alert('File scan done, we have: ' + str(len(self._files)) + ' files to analyze')
 
@@ -317,13 +324,14 @@ class ShellDetector(threading.Thread):
 
     # [START simple_message]
     def send_simple_message(self, to):
+        print 'Start sending email to ' + to + '...\n'
         url = 'https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN_NAME)
         auth = ('api', MAILGUN_API_KEY)
         data = {
             'from': 'Mailgun User <mailgun@{}>'.format(MAILGUN_DOMAIN_NAME),
             'to': to,
-            'subject': 'Simple Mailgun Example',
-            'text': 'Plaintext content',
+            'subject': 'PHP backdoor alert!',
+            'text': 'Check your source code now!',
         }
 
         response = requests.post(url, auth=auth, data=data)
